@@ -1,5 +1,5 @@
 # Project verdemarketrequest
-Project to handle request of quotation and order to Verde Market
+Project to handle request of quotation and order to Verde Market. Receive Http Request with requested orders and handle them to Service Bus Queue.
 
 ###### Reference/Source/Credits
 [Article used to solve the problem of Interface at controller parameter](https://docs.microsoft.com/en-us/aspnet/core/mvc/advanced/custom-model-binding?view=aspnetcore-5.0)    
