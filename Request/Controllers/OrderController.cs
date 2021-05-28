@@ -82,7 +82,16 @@ namespace Request.Controllers
             var msgHandler = new ServiceBusHandler();
 
             if (await msgHandler.SendToServiceBusQueue(queueName, sbConn, request))
-                return await Task.Run(() => { return (ApplicationModelResults<IRequestModel>)request; });
+            {
+                var model = new ApplicationModelResults<IRequestModel>();
+                var instanceResponse = new ApplicationModel<IRequestModel>();
+                instanceResponse.Result = request;
+                model.Results.Add(instanceResponse);
+                return await Task.Run(() =>
+                {
+                    return model;
+                });
+            }
             else
             {
                 HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
