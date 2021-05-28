@@ -38,6 +38,7 @@ namespace Request.Controllers
 
                 return Task.Run(() =>
                 {
+                    HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return new ActionResult<ApplicationModelResults<IRequestModel>>(applicationModelResult);
                 }).Result;
             }
@@ -49,6 +50,7 @@ namespace Request.Controllers
 
                 return Task.Run(() =>
                 {
+                    HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return new ActionResult<ApplicationModelResults<IRequestModel>>(applicationModelResult);
                 }).Result;
             }
@@ -58,6 +60,7 @@ namespace Request.Controllers
                 applicationModelResult.Error = new Error<IRequestModel> { Message = "Itens request must be supplied", Request = request };
                 applicationModelResult.Results = new List<ApplicationModel<IRequestModel>> { new ApplicationModel<IRequestModel> { Error = applicationModelResult.Error } };
 
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Task.Run(() => { return new ActionResult<ApplicationModelResults<IRequestModel>>(applicationModelResult); }).Result;
 
             }
@@ -66,7 +69,9 @@ namespace Request.Controllers
 
                 applicationModelResult.Error = new Error<IRequestModel> { Message = "At least one order must be fulfilled", Request = request };
                 applicationModelResult.Results = new List<ApplicationModel<IRequestModel>> { new ApplicationModel<IRequestModel> { Error = applicationModelResult.Error } };
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return Task.Run(() => { return new ActionResult<ApplicationModelResults<IRequestModel>>(applicationModelResult); }).Result;
 
             }
