@@ -21,6 +21,8 @@ namespace Request
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            var builder = new ConfigurationBuilder().SetBasePath(Environment.CurrentDirectory).AddJsonFile("appsettings.json", true, true);
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -29,6 +31,7 @@ namespace Request
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.Configure<Config>(Configuration.GetSection("ServiceBusSettings"));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Request", Version = "v1" });

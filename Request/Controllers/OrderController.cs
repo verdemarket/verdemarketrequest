@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MessageHandler;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RequestModel;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
+using System.Net;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Web.Http.Controllers;
@@ -15,6 +19,13 @@ namespace Request.Controllers
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
     {
+        private readonly IOptions<Config> _config;
+
+        public OrderController(IOptions<Config> config)
+        {
+            this._config = config;
+        }
+
         [HttpPost("quoteorder")]
         public async Task<ActionResult<ApplicationModelResults<RequestModel.IRequestModel>>> QuoteOrder([ModelBinder(typeof(JsonModelBinder))] RequestModel.IRequestModel request)
         {
@@ -60,7 +71,18 @@ namespace Request.Controllers
 
             }
 
-            return await Task.Run(() => { return new ApplicationModelResults<IRequestModel>(); });
+            HttpContext.Response.Headers.Add("Xablau", "Mil Grau");
+            var sbConn = this._config.Value.serviceBusConnectionStringSender;
+            var queueName = this._config.Value.serviceBusQueueName;
+            var msgHandler = new ServiceBusHandler();
+
+            if (await msgHandler.SendToServiceBusQueue(queueName, sbConn, request))
+                return await Task.Run(() => { return (ApplicationModelResults<IRequestModel>)request; });
+            else
+            {
+                HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return await Task.Run(() => { return new ApplicationModelResults<IRequestModel>(); });
+            }
         }
     }
 
